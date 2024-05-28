@@ -3,6 +3,9 @@ from os import getenv
 from rich import print
 from solarwinds_ipam import IPAM, SubnetType
 
+#
+# This is only for testing an idea at the moment
+#
 
 def query_builder(table, fields_to_return=None, query_parameters=None, order_by=None):
 
