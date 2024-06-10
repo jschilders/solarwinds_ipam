@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from solarwinds_ipam.classes.enums import IpNodeStatus, IpAllocPolicy
-class Node:
+class IPAddress:
     #
     # Fields according to documentation
     #
@@ -80,7 +80,7 @@ class Node:
 
 
     def __repr__(self):
-        return f"<IpNode {self.IPAddress}>"
+        return f"<IPAddress {self.IPAddress}>"
 
     def as_dict(self):
         return { keyname:getattr(self,keyname) for keyname in self.__annotations__ if keyname in vars(self) }

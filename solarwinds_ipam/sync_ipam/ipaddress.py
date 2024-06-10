@@ -10,13 +10,13 @@ def _query(): pass
 def _build_query(): pass
 
 #
-# IP Node C/R/U/D 
+# IP Address C/R/U/D 
 # 
-def create(ip_address:str, subnet_id:str, ordinal:int, status=IpNodeStatus.Reserved, **properties:dict)->str:
-    properties['IPAddress'] = ip_address
-    properties['SubnetId']  = subnet_id
-    properties['IPOrdinal'] = ordinal
-    properties['Status']    = int(status)
+def create(IPAddress:str, SubnetId:str, IPOrdinal:int, Status=IpNodeStatus.Reserved, **properties:dict)->str:
+    properties['IPAddress'] = IPAddress
+    properties['SubnetId']  = SubnetId
+    properties['IPOrdinal'] = IPOrdinal
+    properties['Status']    = int(Status)
     return _create('IPAM.IPNode', **properties)
 
 def read(uri:str)->dict:
@@ -29,7 +29,7 @@ def delete(uri:str)->None:
     return _delete(uri)
 
 #
-# IP Node helper methods
+# IP Address helper methods
 #
 def get_uri(**kwargs:dict)->str:
     result:list = _build_query('IPAM.IPNode', 'Uri', kwargs )
@@ -41,13 +41,18 @@ def get_id(**kwargs:dict)->str:
     if result:
         return result[0].get('IpNodeId')
 
+def get_uri_and_id(**kwargs:dict)->str:
+    result:list = _build_query('IPAM.IPNode', ['Uri', 'IpNodeId'], kwargs )
+    if result:
+        return result[0].get('Uri'), result[0].get('IpNodeId')
+
 def get_parent(**kwargs:dict)->str:
     result:list = _build_query('IPAM.IPNode', 'SubnetID', kwargs )
     if result:
         return result[0].get('SubnetID')
 
-def get_uri_from_id(node_id:int)->str:
-    params = {'IpNodeId': node_id}
+def get_uri_from_id(ipaddress_id:int)->str:
+    params = {'IpNodeId': ipaddress_id}
     result:list = _build_query('IPAM.IPNode', 'Uri', params )
     if result:
         return result[0].get('Uri')
@@ -60,7 +65,7 @@ def get_id_from_uri(uri:str)->int:
 #
 # Other helpers
 #
-def get_nodes_in_subnet(subnet_id:int=None)->list[dict]:
+def get_addresses_in_subnet(subnet_id:int=None)->list[dict]:
     fields = [ 
         'IpNodeId', 'SubnetId', 'IPAddress', 'IPMapped', 'Alias', 'MAC', 'DnsBackward', 
         'DhcpClientName', 'Comments', 'ResponseTime', 'SkipScan', 'Status', 'AllocPolicy', 'Uri'
@@ -68,4 +73,4 @@ def get_nodes_in_subnet(subnet_id:int=None)->list[dict]:
     params = {'SubnetId': subnet_id}
     result:list = _build_query('IPAM.IPNode', fields, params )
     if result:
-        return [ ip_node for ip_node in result ]
+        return [ ip_address for ip_address in result ]

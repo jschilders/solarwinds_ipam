@@ -28,7 +28,7 @@ class SwisApi:
     # -----------------------------------------------------------------------
 
     def _request(self, method, uri, data=None):
-        #print(self.base_url + self.api_path + uri)
+        #print(self.base_url + self.api_path + uri, data)
         response = self.session.request(method, self.api_path + uri, json=data)
         response.raise_for_status()
         return response.json()
