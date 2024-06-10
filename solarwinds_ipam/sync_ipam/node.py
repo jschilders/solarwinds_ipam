@@ -1,12 +1,13 @@
 from solarwinds_ipam.classes import IpNodeStatus
 
 
-
+# dummy functions to keed the IDE happy. Will be overridden later
 def _create(): pass
 def _read(): pass
 def _update(): pass
 def _delete(): pass
 def _query(): pass
+def _build_query(): pass
 
 #
 # IP Node C/R/U/D 
@@ -31,55 +32,40 @@ def delete(uri:str)->None:
 # IP Node helper methods
 #
 def get_uri(**kwargs:dict)->str:
-    result:dict = query_node(**kwargs)
+    result:list = _build_query('IPAM.IPNode', 'Uri', kwargs )
     if result:
-        return result.get('Uri')
-     
-def get_id(**kwargs:dict)->int:
-    result:dict = query_node(**kwargs)
-    if result:
-        return result.get('IpNodeId')
+        return result[0].get('Uri')
 
-def get_uri_and_id(**kwargs:dict)->tuple[str, int]:
-    result:dict = query_node(**kwargs)
+def get_id(**kwargs:dict)->str:
+    result:list = _build_query('IPAM.IPNode', 'IpNodeId', kwargs )
     if result:
-        return result.get('Uri'), result.get('IpNodeId')
+        return result[0].get('IpNodeId')
 
 def get_parent(**kwargs:dict)->str:
-    result:dict = query_node(**kwargs)
+    result:list = _build_query('IPAM.IPNode', 'SubnetID', kwargs )
     if result:
-        return result.get('SubnetID')
+        return result[0].get('SubnetID')
 
-def query_node(ip_address:str, subnet_id:int=None)->dict:
-    query:str = 'SELECT DISTINCT IpNodeId, SubnetID, Uri FROM IPAM.IPNode WHERE IPAddress = @ip_address'
-    query_params:dict = { 'ip_address': ip_address }
-    if subnet_id:
-        query += ' AND SubnetId = @subnet_id'
-        query_params |= { 'subnet_id': subnet_id }
-    result:list = _query(query, **query_params)
+def get_uri_from_id(node_id:int)->str:
+    params = {'IpNodeId': node_id}
+    result:list = _build_query('IPAM.IPNode', 'Uri', params )
     if result:
-        return result[0]
+        return result[0].get('Uri')
 
 def get_id_from_uri(uri:str)->int:
     result:dict = _read(uri)
     if result:
         return result.get('IpNodeId')
 
-def get_uri_from_id(node_id:int)->str:
-    query:str = 'SELECT DISTINCT Uri FROM IPAM.IPNode WHERE IpNodeId = @node_id'
-    query_params:dict = { 'node_id': node_id }
-    result:list = _query(query, **query_params)
-    if result:
-        return result[0].get('Uri')
-
 #
 # Other helpers
 #
 def get_nodes_in_subnet(subnet_id:int=None)->list[dict]:
-    query:str = 'SELECT DISTINCT IpNodeId, SubnetId, IPAddress, IPMapped, Alias, MAC, DnsBackward, DhcpClientName, Comments, ResponseTime, SkipScan, Status, AllocPolicy, Uri FROM IPAM.IPNode WHERE SubnetId = @subnet_id'
-    query_params:dict = { 'subnet_id': subnet_id or getattr('SubnetId', None)}
-    result:dict = _query(query, **query_params)
+    fields = [ 
+        'IpNodeId', 'SubnetId', 'IPAddress', 'IPMapped', 'Alias', 'MAC', 'DnsBackward', 
+        'DhcpClientName', 'Comments', 'ResponseTime', 'SkipScan', 'Status', 'AllocPolicy', 'Uri'
+     ]
+    params = {'SubnetId': subnet_id}
+    result:list = _build_query('IPAM.IPNode', fields, params )
     if result:
         return [ ip_node for ip_node in result ]
-
-

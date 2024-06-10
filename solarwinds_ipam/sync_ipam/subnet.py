@@ -1,11 +1,13 @@
 from solarwinds_ipam.classes import SubnetType
 
 
+# dummy functions to keed the IDE happy. Will be overridden later
 def _create(): pass
 def _read(): pass
 def _update(): pass
 def _delete(): pass
 def _query(): pass
+def _build_query(): pass
 
 #
 # IP Subnet C/R/U/D

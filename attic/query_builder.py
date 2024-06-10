@@ -56,19 +56,10 @@ def main(**connection_parameters) -> None:
             'CIDR': 'DESC',
 #            'Address': 'ASC'
         }
-        query, params = query_builder(table, fields_to_return, query_parameters, order_by)
+        r = my_session._build_query(table, fields_to_return, query_parameters, order_by)
 
-        print()
-        print(query)
-        print(params)
-        print()
-
-        return my_session._query(query, **params)
-
-
-
-
-
+        print(r)
+ 
 
 if __name__ == '__main__':
     load_dotenv()

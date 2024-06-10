@@ -5,7 +5,8 @@ First release, incomplete (nonexistent) documentation.
 It works, but could do with a lot more testing and some cleanup.
 
 
-For safety reasons, I choose not to include credentials in any config files. Instead, I import them from the environment.
+    For safety reasons, I choose not to load credentials from config files.
+    Instead, I import them from the environment.
 
     Quick start:
         - Create a file called ".env" in the root of this project
