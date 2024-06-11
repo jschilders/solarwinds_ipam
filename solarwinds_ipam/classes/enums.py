@@ -14,6 +14,14 @@ class IpAllocPolicy(IntEnum):
     Dynamic = 2
 
 
+class IpSubnetStatus(IntEnum):
+    Up = 1
+    Available = 2
+    Reserved = 4
+    Transient = 8
+    Blocked = 16
+
+
 class SubnetType(IntEnum):
     Root = 1
     Group = 2

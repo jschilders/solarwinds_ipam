@@ -1,0 +1,215 @@
+(.venv) jschilders@BVMALM-L-1BPN:~/work$ /home/jschilders/work/solarwinds_ipam/.venv/bin/python3 /home/jschilders/work/solarwinds_ipam/test_syncswisclient.py
+Start:    IP address 10.22.10.65 has alias ''
+Updated:  IP address 10.22.10.65 has alias 'Test Alias'
+Restored: IP address 10.22.10.65 has alias ''
+Found ID 1259108 for address 10.136.82.2
+Uri for this address is swis://Qpark500.q-park.com/Orion/IPAM.IPNode/IpNodeId=1259108
+And back to ID: 1259108
+Parent subnet for address is 3789
+Other address in this subnet:
+[
+    {
+        'IpNodeId': 1259106,
+        'SubnetId': 3789,
+        'IPAddress': '10.136.82.0',
+        'IPMapped': None,
+        'Alias': None,
+        'MAC': None,
+        'DnsBackward': None,
+        'DhcpClientName': None,
+        'Comments': 'Subnet Address',
+        'ResponseTime': None,
+        'SkipScan': True,
+        'Status': 4,
+        'AllocPolicy': 1,
+        'Uri': 'swis://Qpark500.q-park.com/Orion/IPAM.IPNode/IpNodeId=1259106'
+    },
+    {
+        'IpNodeId': 1259107,
+        'SubnetId': 3789,
+        'IPAddress': '10.136.82.1',
+        'IPMapped': None,
+        'Alias': None,
+        'MAC': None,
+        'DnsBackward': '',
+        'DhcpClientName': None,
+        'Comments': 'Default Gateway',
+        'ResponseTime': None,
+        'SkipScan': False,
+        'Status': 4,
+        'AllocPolicy': 1,
+        'Uri': 'swis://Qpark500.q-park.com/Orion/IPAM.IPNode/IpNodeId=1259107'
+    },
+    {
+        'IpNodeId': 1259108,
+        'SubnetId': 3789,
+        'IPAddress': '10.136.82.2',
+        'IPMapped': None,
+        'Alias': 'Changed Alias',
+        'MAC': '',
+        'DnsBackward': 'PGW-1',
+        'DhcpClientName': '',
+        'Comments': 'PGW-1',
+        'ResponseTime': 29,
+        'SkipScan': False,
+        'Status': 1,
+        'AllocPolicy': 1,
+        'Uri': 'swis://Qpark500.q-park.com/Orion/IPAM.IPNode/IpNodeId=1259108'
+    }
+]
+
+--- Find a subnet 10.136.82.64
+Found. uri='swis://Qpark500.q-park.com/Orion/IPAM.Subnet/SubnetId=3790,ParentId=3788'
+{
+    'SubnetId': 3790,
+    'ParentId': 3788,
+    'Address': '10.136.82.64',
+    'AddressN': None,
+    'AddressMask': '255.255.255.192',
+    'CIDR': 26,
+    'AllocSize': 64,
+    'AllocSizeN': 100.0,
+    'FriendlyName': '10.136.82.64/26',
+    'Comments': 'PMS',
+    'VLAN': '102',
+    'Location': 'BETOCE',
+    'LastDiscovery': '2024-04-29T13:13:29.04',
+    'Status': 1,
+    'ScanInterval': 60,
+    'PercentUsed': 10.9375,
+    'TotalCount': 64,
+    'UsedCount': 5,
+    'AvailableCount': 57,
+    'ReservedCount': 2,
+    'TransientCount': 0,
+    'HasLicenceOverflow': False,
+    'GroupIconPrefix': 'subnet',
+    'StatusName': 'Up',
+    'StatusShortDescription': 'Up',
+    'StatusRanking': 500,
+    'StatusIconPostfix': 'up',
+    'GroupTypeText': 'Subnet',
+    'AccountID': 'api_user',
+    'Role': 'SiteAdmin',
+    'GroupType': 8,
+    'Distance': 1,
+    'SubnetStructureChanged': '2024-03-26T14:03:51.393Z',
+    'DisplayName': '10.136.82.64/26',
+    'Description': None,
+    'InstanceType': 'IPAM.Subnet',
+    'Uri': 'swis://Qpark500.q-park.com/Orion/IPAM.Subnet/SubnetId=3790,ParentId=3788',
+    'InstanceSiteId': 0
+}
+
+--- Find parent subnet ID of subnet 10.136.82.64
+Found. id=3788
+Subnet info for ID 3788 is ('10.136.82.0', '255.255.254.0', 23)
+
+--- Find a subnet 10.136.82.0
+Found. uri='swis://Qpark500.q-park.com/Orion/IPAM.Subnet/SubnetId=3788,ParentId=3785'
+
+--- Find a supernet 10.136.82.0
+Found. uri='swis://Qpark500.q-park.com/Orion/IPAM.Subnet/SubnetId=3788,ParentId=3785'
+
+--- Find a subnet 10.16.0.0 with an explicid mask length of /26
+Found, uri='swis://Qpark500.q-park.com/Orion/IPAM.Subnet/SubnetId=4176,ParentId=4175'
+Note that you can use read(uri) only on subnets, not on supernets
+{
+    'SubnetId': 4176,
+    'ParentId': 4175,
+    'Address': '10.16.0.0',
+    'AddressN': None,
+    'AddressMask': '255.255.255.192',
+    'CIDR': 26,
+    'AllocSize': 64,
+    'AllocSizeN': 100.0,
+    'FriendlyName': '10.16.0.0/26',
+    'Comments': 'Evian Management',
+    'VLAN': '',
+    'Location': 'FREVICDG',
+    'LastDiscovery': '2024-04-29T13:12:37.4',
+    'Status': 1,
+    'ScanInterval': 60,
+    'PercentUsed': 23.4375,
+    'TotalCount': 64,
+    'UsedCount': 13,
+    'AvailableCount': 49,
+    'ReservedCount': 2,
+    'TransientCount': 0,
+    'HasLicenceOverflow': False,
+    'GroupIconPrefix': 'subnet',
+    'StatusName': 'Up',
+    'StatusShortDescription': 'Up',
+    'StatusRanking': 500,
+    'StatusIconPostfix': 'up',
+    'GroupTypeText': 'Subnet',
+    'AccountID': 'api_user',
+    'Role': 'SiteAdmin',
+    'GroupType': 8,
+    'Distance': 1,
+    'SubnetStructureChanged': '2024-03-26T14:06:21.4Z',
+    'DisplayName': '10.16.0.0/26',
+    'Description': None,
+    'InstanceType': 'IPAM.Subnet',
+    'Uri': 'swis://Qpark500.q-park.com/Orion/IPAM.Subnet/SubnetId=4176,ParentId=4175',
+    'InstanceSiteId': 0
+}
+
+--- Find Uri and ID for subnet 10.136.82.64
+Found. uri='swis://Qpark500.q-park.com/Orion/IPAM.Subnet/SubnetId=3790,ParentId=3788' id=3790
+Uri from ID: swis://Qpark500.q-park.com/Orion/IPAM.Subnet/SubnetId=3790,ParentId=3788
+Uri from ID: True
+ID from Uri: 3790
+ID from Uri: True
+
+*** Testing C/R/U/D
+
+*--- No Existing subnet 10.99.10.0/24, nothing to deleted
+
+--- Search for subnet 10.16.0.0 of type supernet
+Parent ID (ID of subnet 10.16.0.0/13) is 5261
+Created a new subnet, subnet uri is swis://Qpark500.q-park.com/Orion/IPAM.Subnet/SubnetId=5371,ParentId=0
+Subnet: 10.99.10.0 /24
+ID for this subnet is 5371
+Should be the same: 5371 == 5371: True
+Update: VLAN ID of Subnet before update: 
+Update: VLAN ID of Subnet after update: 10
+{
+    'IpNodeId': 1259108,
+    'SubnetId': 3789,
+    'IPOrdinal': 2,
+    'IPAddress': '10.136.82.2',
+    'IPAddressN': '0252880a-0000-0000-0000-000000000000',
+    'IPMapped': None,
+    'IPMappedN': None,
+    'Alias': 'Changed Alias',
+    'MAC': '',
+    'DnsBackward': 'PGW-1',
+    'DhcpClientName': '',
+    'SysName': '',
+    'Description': '',
+    'Contact': '',
+    'Location': '',
+    'SysObjectID': '',
+    'Vendor': '',
+    'VendorIcon': None,
+    'MachineType': '',
+    'Comments': 'PGW-1',
+    'ResponseTime': 29,
+    'LastBoot': None,
+    'LastSync': '2024-04-29T15:56:22.073',
+    'LastCredential': '00000000-0000-0000-0000-000000000000',
+    'Status': 1,
+    'AllocPolicy': 1,
+    'SkipScan': False,
+    'LeaseExpires': None,
+    'DnsBy': 12288,
+    'MacBy': 0,
+    'StatusBy': 0,
+    'SystemDataBy': 0,
+    'DisplayName': '10.136.82.2',
+    'InstanceType': 'IPAM.IPNode',
+    'Uri': 'swis://Qpark500.q-park.com/Orion/IPAM.IPNode/IpNodeId=1259108',
+    'InstanceSiteId': 0
+}
+(.venv) jschilders@BVMALM-L-1BPN:~/work$ 

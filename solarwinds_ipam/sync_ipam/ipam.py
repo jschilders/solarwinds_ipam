@@ -6,10 +6,7 @@ import re
 
 class IPAM(SwisApi):
 
-    def __init__(
-        self, *, server="", port=17778, username="", password="", verify=False
-    ):
-
+    def __init__(self, *, server="", port=17778, username="", password="", verify=False):
         super().__init__(
             server=server,
             port=port,
@@ -19,13 +16,13 @@ class IPAM(SwisApi):
         )
         #
         # Some weird things going on here :)
-        # We make the 'ipaddress' and 'ipsubnet' modules imported above available in this class, so we can
+        # We make the "ipaddress" and "ipsubnet" modules imported above available in this class, so we can
         # use the functions in these modules as methods from this class.
         # ipam = IPAM(...)
-        # ipam.ipaddress.* -> functions is 'ipaddress' module, i.e. ipam.ipaddress.get(...)
-        # ipam.ipsubnet.* -> functions is 'ipsubnet' module, i.e. ipam.ipsubnet.get_uri(...)
+        # ipam.ipaddress.* -> functions is "ipaddress" module, i.e. ipam.ipaddress.get(...)
+        # ipam.ipsubnet.* -> functions is "ipsubnet" module, i.e. ipam.ipsubnet.get_uri(...)
         #
-        # The basic methods are inherited from the 'swisclient' superclass
+        # The basic methods are inherited from the "swisclient" superclass
         #
         self.monkeypatch("ipaddress")
         self.monkeypatch("ipsubnet")

@@ -43,7 +43,7 @@ def main(**connection_parameters) -> None:
             print(f"Parent subnet for address is {parent}")
             result = my_session.ipaddress.get_addresses_in_subnet(parent)
             print(f"Other address in this subnet:")
-            print(result)
+            print(result[:3])
 
         # todo: tests for
         #       ipaddress.delete, ipaddress.create,
@@ -78,9 +78,7 @@ def main(**connection_parameters) -> None:
         print(f"\n--- Find a supernet 10.136.82.0")
         # Note that this will find the SUPERnet.
         # There is also a SUBnet with the same name.
-        uri = my_session.ipsubnet.get_uri(
-            Address="10.136.82.0", GroupType=SubnetType.Supernet
-        )
+        uri = my_session.ipsubnet.get_uri(Address="10.136.82.0", GroupType=SubnetType.Supernet)
         if uri:
             print(f"Found. {uri=}")
         else:
@@ -95,19 +93,18 @@ def main(**connection_parameters) -> None:
         else:
             print("Not Found")
 
-        print(f"\n--- Find Uri and ID for subnet 10.136.82.0")
+        print(f"\n--- Find Uri and ID for subnet 10.136.82.64")
         # Note that this will find the SUBnet.
         # There is also a SUPERnet with the same name.
-        uri, id = my_session.ipsubnet.get_uri_and_id(Address="10.136.82.0")
+        uri, id = my_session.ipsubnet.get_uri_and_id(Address="10.136.82.64")
         if uri and id:
             print(f"Found. {uri=} {id=}")
 
             print("Uri from ID:", my_session.ipsubnet.get_uri_from_id(id))
             print("Uri from ID:", my_session.ipsubnet.get_uri_from_id(id) == uri)
 
-            # THIS DOES NOT WORK! 400 BAD REQUEST
-            # print('ID from Uri:', my_session.ipsubnet.get_id_from_uri(uri))
-            # print('ID from Uri:', my_session.ipsubnet.get_id_from_uri(uri)==id)
+            print("ID from Uri:", my_session.ipsubnet.get_id_from_uri(uri))
+            print("ID from Uri:", my_session.ipsubnet.get_id_from_uri(uri) == id)
 
         else:
             print("Not Found")
@@ -126,16 +123,12 @@ def main(**connection_parameters) -> None:
         # change its properties,
         # then delete the subnet
         print(f"\n--- Search for subnet 10.16.0.0 of type supernet")
-        parent_id = my_session.ipsubnet.get_id(
-            Address="10.16.0.0", GroupType=SubnetType.Supernet
-        )
+        parent_id = my_session.ipsubnet.get_id(Address="10.16.0.0", GroupType=SubnetType.Supernet)
         if parent_id:
             print(f"Parent ID (ID of subnet 10.16.0.0/13) is {parent_id}")
 
             # Create a new subnet
-            uri = my_session.ipsubnet.create(
-                "10.99.10.0", 24, parent_id=parent_id, Comments="test"
-            )
+            uri = my_session.ipsubnet.create("10.99.10.0", 24, parent_id=parent_id, Comments="test")
             print(f"Created a new subnet, subnet uri is {uri}")
             print(f"Subnet: {my_session.ipsubnet.read(uri).get('FriendlyName')}")
 
@@ -146,24 +139,20 @@ def main(**connection_parameters) -> None:
             if subnet_id:
                 print(f"Should be the same: {id} == {subnet_id}: {id==subnet_id}")
 
-                my_subnet = my_session.ipaddress.get_addresses_in_subnet(id)
-                print(my_subnet)
+                # my_subnet = my_session.ipaddress.get_addresses_in_subnet(id)
+                # print(my_subnet)
 
-                my_uri = my_session.ipaddress.get_uri(IPAddress="10.99.10.250")
+                # my_uri = my_session.ipaddress.get_uri(IPAddress="10.99.10.250")
                 # 403 FORBIDDEN?
                 # my_session.ipaddress.delete(my_uri)
 
-                my_subnet = my_session.ipaddress.get_addresses_in_subnet(id)
-                print(my_subnet)
+                # my_subnet = my_session.ipaddress.get_addresses_in_subnet(id)
+                # print(my_subnet)
 
             # Update subnet
-            print(
-                f"Update: VLAN ID of Subnet before update: {my_session.ipsubnet.read(uri).get('VLAN')}"
-            )
+            print(f"Update: VLAN ID of Subnet before update: {my_session.ipsubnet.read(uri).get('VLAN')}")
             r = my_session.ipsubnet.update(uri, VLAN=10)
-            print(
-                f"Update: VLAN ID of Subnet after update: {my_session.ipsubnet.read(uri).get('VLAN')}"
-            )
+            print(f"Update: VLAN ID of Subnet after update: {my_session.ipsubnet.read(uri).get('VLAN')}")
 
             # delete subnet
             r = my_session.ipsubnet.delete(uri)

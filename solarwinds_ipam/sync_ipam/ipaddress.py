@@ -2,40 +2,20 @@ from solarwinds_ipam.classes import IpNodeStatus
 
 
 # dummy functions to keed the IDE happy. Will be overridden later
-def _create():
-    pass
-
-
-def _read():
-    pass
-
-
-def _update():
-    pass
-
-
-def _delete():
-    pass
-
-
-def _query():
-    pass
-
-
-def _build_query():
-    pass
+# fmt: off
+def _create(): pass
+def _read(): pass
+def _update(): pass
+def _delete(): pass
+def _query(): pass
+def _build_query(): pass
+# fmt: on
 
 
 #
 # IP Address C/R/U/D
 #
-def create(
-    IPAddress: str,
-    SubnetId: str,
-    IPOrdinal: int,
-    Status=IpNodeStatus.Reserved,
-    **properties: dict
-) -> str:
+def create(IPAddress: str, SubnetId: str, IPOrdinal: int, Status=IpNodeStatus.Reserved, **properties: dict) -> str:
     properties["IPAddress"] = IPAddress
     properties["SubnetId"] = SubnetId
     properties["IPOrdinal"] = IPOrdinal
@@ -82,8 +62,8 @@ def get_parent(**kwargs: dict) -> str:
         return result[0].get("SubnetID")
 
 
-def get_uri_from_id(ipaddress_id: int) -> str:
-    params = {"IpNodeId": ipaddress_id}
+def get_uri_from_id(IpNodeId: int) -> str:
+    params = {"IpNodeId": IpNodeId}
     result: list = _build_query("IPAM.IPNode", "Uri", params)
     if result:
         return result[0].get("Uri")
@@ -98,24 +78,9 @@ def get_id_from_uri(uri: str) -> int:
 #
 # Other helpers
 #
-def get_addresses_in_subnet(subnet_id: int = None) -> list[dict]:
-    fields = [
-        "IpNodeId",
-        "SubnetId",
-        "IPAddress",
-        "IPMapped",
-        "Alias",
-        "MAC",
-        "DnsBackward",
-        "DhcpClientName",
-        "Comments",
-        "ResponseTime",
-        "SkipScan",
-        "Status",
-        "AllocPolicy",
-        "Uri",
-    ]
-    params = {"SubnetId": subnet_id}
+def get_addresses_in_subnet(SubnetId: int = None) -> list[dict]:
+    fields = ["IpNodeId", "IPAddress", "DnsBackward", "Comments", "Status", "Uri"]
+    params = {"SubnetId": SubnetId}
     result: list = _build_query("IPAM.IPNode", fields, params)
     if result:
         return [ip_address for ip_address in result]

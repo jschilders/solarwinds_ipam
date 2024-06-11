@@ -11,18 +11,18 @@ def main(**connection_parameters) -> None:
         fields_to_return = [
             "ParentID",
             "SubnetID",
-            #    'Uri',
+            #    "Uri",
             "CIDR",
             "GroupType",
         ]
         query_parameters = {
             "Address": "10.136.82.0",
-            #'CIDR':      '24',
-            #'GroupType': 4
+            # "CIDR":      "24",
+            # "GroupType": 4
         }
         order_by = {
             "CIDR": "DESC",
-            #            'Address': 'ASC'
+            #            "Address": "ASC"
         }
         r = my_session._build_query(table, fields_to_return, query_parameters, order_by)
 

@@ -13,13 +13,12 @@ def _build_query(): pass
 
 
 #
-# IP Subnet C/R/U/D
+# IP Group C/R/U/D
 #
-def create(Address: str, CIDR: str, ParentId: int = 0, subnet_type: SubnetType = SubnetType.Subnet, **properties: dict) -> str:  # fmt: skip
-    properties["Address"] = Address
-    properties["CIDR"] = CIDR
+def create(FriendlyName: str = "", ParentId: int = 0, SubnetType: SubnetType = SubnetType.Group, **properties: dict) -> str:  # fmt: skip
+    properties["FriendlyName"] = FriendlyName
     properties["ParentId"] = ParentId
-    properties["SubnetType"] = subnet_type
+    properties["SubnetType"] = SubnetType
     return _create("IPAM.Subnet", **properties)
 
 
@@ -36,7 +35,7 @@ def delete(uri: str) -> None:
 
 
 #
-# IP subnet helper methods
+# # Group helper methods
 #
 def get_uri(**kwargs: dict) -> str:
     result: list = _build_query("IPAM.Subnet", "Uri", kwargs)
@@ -75,13 +74,8 @@ def get_id_from_uri(uri: str) -> int:
         return result.get("SubnetId")
 
 
-def get_subnet_address(subnet_id: int) -> str:
-    fields: list = ["Address", "AddressMask", "CIDR"]
-    params: dict = {"SubnetID": subnet_id}
-    result: list = _build_query("IPAM.Subnet", fields, params)
+def get_group_comments(FriendlyName: str = None) -> str:
+    params: dict = {"FriendlyName": FriendlyName}
+    result: list = _build_query("IPAM.Subnet", "Comments", params)
     if result:
-        return (
-            result[0].get("Address"),
-            result[0].get("AddressMask"),
-            result[0].get("CIDR"),
-        )
+        return result[0].get("Comments")
