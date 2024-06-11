@@ -7,69 +7,71 @@ from solarwinds_ipam import IPAM, SubnetType
 # This is only for testing an idea at the moment
 #
 
+
 def query_builder(table, fields_to_return=None, query_parameters=None, order_by=None):
 
     if fields_to_return:
-        fields = ', '.join(fields_to_return)
+        fields = ", ".join(fields_to_return)
     else:
-        fields = '*'
+        fields = "*"
         # Will not work with swql
 
     if query_parameters:
-        select = ' WHERE ' + ' AND '.join(f'{param} = @{param}' for param  in query_parameters)
+        select = " WHERE " + " AND ".join(
+            f"{param} = @{param}" for param in query_parameters
+        )
     else:
-        select = ''
+        select = ""
 
     if order_by:
-        order = ' ORDER BY ' + ', '.join(f'{fieldname} {direction}' for fieldname, direction in order_by.items())
+        order = " ORDER BY " + ", ".join(
+            f"{fieldname} {direction}" for fieldname, direction in order_by.items()
+        )
     else:
-        order = ''
+        order = ""
 
     query = f"SELECT DISTINCT {fields} FROM {table}{select}{order};"
     if select:
-        params = { parameter: value for parameter, value in query_parameters.items() }
+        params = {parameter: value for parameter, value in query_parameters.items()}
     else:
         params = {}
 
     return query, params
 
 
-
 def main(**connection_parameters) -> None:
     with IPAM(**connection_parameters) as my_session:
 
-        table = 'IPAM.Subnet'
-        fields_to_return = [ 
-            'ParentID', 
-            'SubnetID', 
-        #    'Uri', 
-            'CIDR',
-            'GroupType'
+        table = "IPAM.Subnet"
+        fields_to_return = [
+            "ParentID",
+            "SubnetID",
+            #    'Uri',
+            "CIDR",
+            "GroupType",
         ]
         query_parameters = {
-            'Address':   '10.136.82.0',
+            "Address": "10.136.82.0",
             #'CIDR':      '24',
             #'GroupType': 4
-            
         }
         order_by = {
-            'CIDR': 'DESC',
-#            'Address': 'ASC'
+            "CIDR": "DESC",
+            #            'Address': 'ASC'
         }
         r = my_session._build_query(table, fields_to_return, query_parameters, order_by)
 
         print(r)
- 
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     load_dotenv()
     connection_parameters = {
-        'server':   getenv('SERVER') or '',
-        'port':     getenv('PORT') or 17778,
-        'username': getenv('USERNAME') or '',
-        'password': getenv('PASSWORD') or '',
-        'verify':   False
+        "server": getenv("SERVER") or "",
+        "port": getenv("PORT") or 17778,
+        "username": getenv("USERNAME") or "",
+        "password": getenv("PASSWORD") or "",
+        "verify": False,
     }
     r = main(**connection_parameters)
     print(r)
-

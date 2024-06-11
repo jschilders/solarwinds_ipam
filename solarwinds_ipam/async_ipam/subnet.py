@@ -2,24 +2,19 @@ from solarwinds_ipam.classes import SubnetType
 
 
 #
-# Group C/R/U/D
+# IP Subnet C/R/U/D
 #
-async def create(
-    connection,
-    friendly_name: str = "",
-    subnet_type: SubnetType = SubnetType.Group,
-    parent_id=0,
-    **properties,
-):
-    properties["SubnetType"] = subnet_type
+async def create(connection, subnet_address, subnet_cidr, parent_id=0, **properties):
+    properties["Address"] = subnet_address
+    properties["CIDR"] = subnet_cidr
     properties["ParentId"] = parent_id
-    properties["FriendlyName"] = friendly_name
     result = await connection._create("IPAM.Subnet", **properties)
     return result
 
 
 async def read(connection, uri):
     result = await connection._read(uri)
+    # return IpSubnet(**result)
     return result
 
 
@@ -33,29 +28,30 @@ async def delete(connection, uri):
     return result
 
 
-# Group helper methods
+#
+# IP subnet helper methods
 #
 async def get_uri(connection, **kwargs):
-    result = await query_group(connection, **kwargs)
+    result = await query_subnet(connection, **kwargs)
     return result["Uri"]
 
 
 async def get_id(connection, **kwargs):
-    result = await query_group(connection, **kwargs)
+    result = await query_subnet(connection, **kwargs)
     return result["SubnetID"]
 
 
 async def get_uri_and_id(connection, **kwargs):
-    result = await query_group(connection, **kwargs)
+    result = await query_subnet(connection, **kwargs)
     return result["Uri"], result["SubnetID"]
 
 
 async def get_parent(connection, **kwargs):
-    result = await query_group(connection, **kwargs)
+    result = await query_subnet(connection, **kwargs)
     return result["ParentID"]
 
 
-async def query_group(
+async def query_subnet(
     connection,
     subnet_address: str = None,
     subnet_cidr: int = None,
@@ -75,8 +71,8 @@ async def query_group(
 
 
 async def get_id_from_uri(connection, uri):
-    group_id = await connection.read(uri)["SubnetId"]
-    return group_id
+    subnet_id = await connection.read(uri)["SubnetId"]
+    return subnet_id
 
 
 async def get_uri_from_id(connection, subnet_id):
@@ -86,10 +82,8 @@ async def get_uri_from_id(connection, subnet_id):
     return result["result"][0]["Uri"]
 
 
-async def get_group_comments(self, friendly_name: str = None):
-    query = (
-        "SELECT DISTINCT Comments FROM IPAM.Subnet WHERE FriendlyName = @friendly_name"
-    )
-    query_params = {"friendly_name": friendly_name}
-    if result := await self._query(query, **query_params).get("results"):
-        return result[0]["Comments"]
+async def get_subnet_address(connection, subnet_id=None):
+    query = "SELECT DISTINCT Address, AddressMask, CIDR FROM IPAM.Subnet WHERE SubnetId = @subnet_id"
+    query_params = {"subnet_id": subnet_id or getattr(connection, "SubnetId", None)}
+    result = await connection._query(query, **query_params)
+    return result["result"][0]["Address"], result[0]["AddressMask"], result[0]["CIDR"]

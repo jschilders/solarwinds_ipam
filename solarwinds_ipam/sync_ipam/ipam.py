@@ -3,11 +3,20 @@ from solarwinds_ipam.sync_ipam import ipaddress
 from solarwinds_ipam.sync_ipam import ipsubnet
 import re
 
+
 class IPAM(SwisApi):
 
-    def __init__(self, *, server='', port=17778, username='', password='', verify=False):
+    def __init__(
+        self, *, server="", port=17778, username="", password="", verify=False
+    ):
 
-        super().__init__(server=server, port=port, username=username, password=password, verify=verify)
+        super().__init__(
+            server=server,
+            port=port,
+            username=username,
+            password=password,
+            verify=verify,
+        )
         #
         # Some weird things going on here :)
         # We make the 'ipaddress' and 'ipsubnet' modules imported above available in this class, so we can
@@ -18,8 +27,8 @@ class IPAM(SwisApi):
         #
         # The basic methods are inherited from the 'swisclient' superclass
         #
-        self.monkeypatch('ipaddress')
-        self.monkeypatch('ipsubnet')
+        self.monkeypatch("ipaddress")
+        self.monkeypatch("ipsubnet")
 
     def monkeypatch(self, module_name):
         #
@@ -32,7 +41,7 @@ class IPAM(SwisApi):
         # Patch all methods in this class that start with a single "_" into the new module
         #
         for method_name in dir(self):
-            if re.match(r'^_[^_]', method_name):
+            if re.match(r"^_[^_]", method_name):
                 function = getattr(super(), method_name)
                 if callable(function):
                     setattr(module, method_name, function)

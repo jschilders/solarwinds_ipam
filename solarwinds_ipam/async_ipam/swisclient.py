@@ -1,17 +1,20 @@
 import httpx
 
+
 class AsyncSwisClient:
-    def __init__(self, *, server='', port=17778, username='', password='', verify=False):
+    def __init__(
+        self, *, server="", port=17778, username="", password="", verify=False
+    ):
         self.base_url = f"https://{server}:{port}/"
         self.api_path = "SolarWinds/InformationService/v3/Json/"
-        self.headers = {'Content-Type': 'application/json'}
+        self.headers = {"Content-Type": "application/json"}
         self.auth = (username, password)
         self.verify = verify
         self.session = httpx.AsyncClient(
             base_url=self.base_url,
             headers=self.headers,
-            auth = self.auth,
-            verify=self.verify
+            auth=self.auth,
+            verify=self.verify,
         )
 
     async def __aenter__(self):
@@ -29,7 +32,9 @@ class AsyncSwisClient:
         return response.json()
 
     async def _query(self, query, **params):
-        return await self._request("POST", "Query", {'query': query, 'parameters': params})
+        return await self._request(
+            "POST", "Query", {"query": query, "parameters": params}
+        )
 
     async def _invoke(self, entity, verb, *args):
         return await self._request("POST", f"Invoke/{entity}/{verb}", args)
@@ -47,8 +52,9 @@ class AsyncSwisClient:
         await self._request("DELETE", uri)
 
     async def _bulkupdate(self, uris, **properties):
-        await self._request("POST", "BulkUpdate", {'uris': uris, 'properties': properties})
+        await self._request(
+            "POST", "BulkUpdate", {"uris": uris, "properties": properties}
+        )
 
     async def _bulkdelete(self, uris):
-        await self._request("POST", "BulkDelete", {'uris': uris})
-
+        await self._request("POST", "BulkDelete", {"uris": uris})
