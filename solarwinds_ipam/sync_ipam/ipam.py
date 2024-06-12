@@ -1,6 +1,8 @@
 from solarwinds_ipam.sync_ipam.swis_api import SwisApi
 from solarwinds_ipam.sync_ipam import ipaddress
 from solarwinds_ipam.sync_ipam import ipsubnet
+from solarwinds_ipam.sync_ipam import nodes
+from solarwinds_ipam.sync_ipam import ncm_nodes
 import re
 
 
@@ -26,6 +28,8 @@ class IPAM(SwisApi):
         #
         self.monkeypatch("ipaddress")
         self.monkeypatch("ipsubnet")
+        self.monkeypatch("nodes")
+        self.monkeypatch("ncm_nodes")
 
     def monkeypatch(self, module_name):
         #
