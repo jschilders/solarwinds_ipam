@@ -2,12 +2,11 @@ import asyncio
 from dotenv import load_dotenv
 from os import getenv
 from rich import print
-from solarwinds_ipam import AsyncIPAM, SubnetType
+from solarwinds_ipam import AsyncIPAM
 
 
 async def main(**connection_parameters) -> None:
     async with AsyncIPAM(**connection_parameters) as my_session:
-
         uri = await my_session.ipaddress.get_uri(IPAddress="10.22.10.65")
         if uri:
             # Get the IP address info
@@ -29,7 +28,7 @@ async def main(**connection_parameters) -> None:
             result = await my_session.ipaddress.read(uri)
             print(f"Restored: IP address {ip_address} has alias {result['Alias']!r}")
 
-        print(f"\n--- Find a subnet 10.136.82.64")
+        print("\n--- Find a subnet 10.136.82.64")
         uri = await my_session.ipsubnet.get_uri(Address="10.136.82.64")
         if uri:
             print(f"Found. {uri=}")
@@ -48,7 +47,7 @@ if __name__ == "__main__":
     load_dotenv()
     connection_parameters = {
         "server": getenv("SERVER") or "",
-        "port": getenv("PORT") or 17778,
+        "port": getenv("PORT") or 17774,
         "username": getenv("USERNAME") or "",
         "password": getenv("PASSWORD") or "",
         "verify": False,

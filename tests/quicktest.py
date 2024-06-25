@@ -8,13 +8,16 @@ load_dotenv()
 
 connection_parameters = {
     "server": getenv("SERVER") or "",
-    "port": getenv("PORT") or 17778,
+    "port": getenv("PORT") or 17774,
     "username": getenv("USERNAME") or "",
     "password": getenv("PASSWORD") or "",
     "verify": False,
 }
 
 conn: IPAM = IPAM(**connection_parameters)
-print(conn.ipaddress.read("swis://Qpark500.q-park.com/Orion/IPAM.IPNode/IpNodeId=1259109"))
-
-print(conn.ipsubnet.read("swis://Qpark500.q-park.com/Orion/IPAM.Subnet/SubnetId=3790,ParentId=3788"))
+# print(conn.ipaddress.read("swis://Qpark500.q-park.com/Orion/IPAM.IPNode/IpNodeId=1259109"))
+# print(conn.ipsubnet.read("swis://Qpark500.q-park.com/Orion/IPAM.Subnet/SubnetId=3790,ParentId=3788"))
+uri = conn.ipgroups.get_uri(FriendlyName="UKSHRS")
+print(uri)
+# group = conn.ipsubnet.read(uri)
+# print(group)

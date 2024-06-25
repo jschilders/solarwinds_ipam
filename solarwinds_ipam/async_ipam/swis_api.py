@@ -2,7 +2,7 @@ import httpx
 
 
 class AsyncSwisApi:
-    def __init__(self, *, server="", port=17778, username="", password="", verify=False):
+    def __init__(self, *, server="", port=17774, username="", password="", verify=False):
         self.base_url = f"https://{server}:{port}/"
         self.api_path = "SolarWinds/InformationService/v3/Json/"
         self.headers = {"Content-Type": "application/json"}
@@ -67,13 +67,7 @@ class AsyncSwisApi:
         order_by: dict = None,
     ):
         fields = ", ".join(fields_to_return) if isinstance(fields_to_return, list) else fields_to_return
-        select = (
-            " WHERE " + " AND ".join(f"{param} = @{param}" for param in query_parameters) if query_parameters else ""
-        )
-        order = (
-            " ORDER BY " + ", ".join(f"{fieldname} {direction}" for fieldname, direction in order_by.items())
-            if order_by
-            else ""
-        )
+        select = " WHERE " + " AND ".join(f"{param} = @{param}" for param in query_parameters) if query_parameters else ""
+        order = " ORDER BY " + ", ".join(f"{fieldname} {direction}" for fieldname, direction in order_by.items()) if order_by else ""
         query = f"SELECT DISTINCT {fields} FROM {table_name}{select}{order};"
         return await self._query(query, **query_parameters)

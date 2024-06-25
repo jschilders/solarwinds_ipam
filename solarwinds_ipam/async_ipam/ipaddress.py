@@ -98,4 +98,4 @@ async def get_addresses_in_subnet(SubnetId: int = None) -> list[dict]:
     params = {"SubnetId": SubnetId}
     result: list = await _build_query("IPAM.IPNode", fields, params)
     if result:
-        return [ip_address for ip_address in result]
+        return [ip_address for ip_address in result]  # noqa: C416

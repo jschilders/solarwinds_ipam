@@ -1,6 +1,3 @@
-from solarwinds_ipam.classes import SubnetType
-
-
 # dummy functions to keed the IDE happy. Will be overridden later
 # fmt: off
 async def _create(): pass

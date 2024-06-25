@@ -38,6 +38,7 @@ def delete(uri: str) -> None:
 # # Group helper methods
 #
 def get_uri(**kwargs: dict) -> str:
+    kwargs = {"GroupType": int(SubnetType.Group), **kwargs}
     result: list = _build_query("IPAM.Subnet", "Uri", kwargs)
     if result:
         return result[0].get("Uri")
@@ -74,7 +75,7 @@ def get_id_from_uri(uri: str) -> int:
         return result.get("SubnetId")
 
 
-def get_group_comments(FriendlyName: str = None) -> str:
+def get_comment(FriendlyName: str = None) -> str:
     params: dict = {"FriendlyName": FriendlyName}
     result: list = _build_query("IPAM.Subnet", "Comments", params)
     if result:

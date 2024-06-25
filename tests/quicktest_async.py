@@ -19,7 +19,7 @@ load_dotenv()
 
 connection_parameters = {
     "server": getenv("SERVER") or "",
-    "port": getenv("PORT") or 17778,
+    "port": getenv("PORT") or 17774,
     "username": getenv("USERNAME") or "",
     "password": getenv("PASSWORD") or "",
     "verify": False,

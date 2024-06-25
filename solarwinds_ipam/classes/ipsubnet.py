@@ -2,24 +2,23 @@ from solarwinds_ipam.classes.enums import SubnetType, IpSubnetStatus
 
 
 class IPSubnet:
-
     # fmt: off
 
     #
     # Fields according to documentation
     #
-    SubnetId: int			    # Read-Only
-    ParentId: int = 0		
-    Address: str = ""	        # Required
-    AddressMask: str = ""	    # Read-Only
-    CIDR: int		            # Read-Only, required
-                                # Address CIDR must be greater than 21 and less than or equal to 32.
-    FriendlyName: str = ""      # Required. "Address"/"CIDR". Auto-created?
-    Comments: str =""		
-    VLAN: str =""	
+    SubnetId: int			                        # Read-Only
+    ParentId: int = 0
+    Address: str = ""	                            # Required
+    AddressMask: str = ""	                        # Read-Only
+    CIDR: int		                                # Read-Only, required
+                                                    # Address CIDR must be greater than 21 and less than or equal to 32.
+    FriendlyName: str = ""                          # Required. "Address"/"CIDR". Auto-created?
+    Comments: str =""
+    VLAN: str =""
     Location: str =""
-    ScanInterval: int = 240		
-    Status: IpSubnetStatus = IpSubnetStatus.Up    # Extra field
+    ScanInterval: int = 240
+    Status: IpSubnetStatus = IpSubnetStatus.Up      # Extra field
     GroupType: SubnetType = SubnetType.Subnet       # Extra field
     Uri: str =""                                    # Extra field
 

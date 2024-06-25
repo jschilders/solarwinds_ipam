@@ -2,7 +2,6 @@ from solarwinds_ipam.classes.enums import IpNodeStatus, IpAllocPolicy
 
 
 class IPAddress:
-
     # fmt: off
 
     #
@@ -26,7 +25,7 @@ class IPAddress:
     Status: IpNodeStatus = IpNodeStatus.Available       # required, default: Available
                                                         # Values: "Used", "Available", "Reserved", "Transient", "Blocked"
     AllocPolicy: IpAllocPolicy = IpAllocPolicy.Static   # Default: Static. Values: "Static", "Dynamic"
-    Uri: str = ""                                       
+    Uri: str = ""
 
     # fmt: on
 
@@ -84,7 +83,7 @@ class IPAddress:
         ##self.Status =           IpNodeStatus(self._raw.get("Status",2))
         ##self.AllocPolicy =      IpAllocPolicy(self._raw.get("AllocPolicy", 1))
 
-    def prepare_updates(self):
+    def prepare_updates(self):  # noqa: C901
         updates = {}
 
         if self.Status == IpNodeStatus.Available:

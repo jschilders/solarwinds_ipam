@@ -1,12 +1,12 @@
 from solarwinds_ipam.sync_ipam.swis_api import SwisApi
-from solarwinds_ipam.sync_ipam import ipaddress
-from solarwinds_ipam.sync_ipam import ipsubnet
+from solarwinds_ipam.sync_ipam import ipaddress  # noqa: F401
+from solarwinds_ipam.sync_ipam import ipsubnet  # noqa: F401
+from solarwinds_ipam.sync_ipam import ipgroups  # noqa: F401
 import re
 
 
 class IPAM(SwisApi):
-
-    def __init__(self, *, server="", port=17778, username="", password="", verify=False):
+    def __init__(self, *, server="", port=17774, username="", password="", verify=False):
         super().__init__(
             server=server,
             port=port,
@@ -26,6 +26,7 @@ class IPAM(SwisApi):
         #
         self.monkeypatch("ipaddress")
         self.monkeypatch("ipsubnet")
+        self.monkeypatch("ipgroups")
 
     def monkeypatch(self, module_name):
         #

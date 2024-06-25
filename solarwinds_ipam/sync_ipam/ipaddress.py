@@ -15,7 +15,13 @@ def _build_query(): pass
 #
 # IP Address C/R/U/D
 #
-def create(IPAddress: str, SubnetId: str, IPOrdinal: int, Status=IpNodeStatus.Reserved, **properties: dict) -> str:
+def create(
+    IPAddress: str,
+    SubnetId: str,
+    IPOrdinal: int,
+    Status=IpNodeStatus.Reserved,
+    **properties: dict,
+) -> str:
     properties["IPAddress"] = IPAddress
     properties["SubnetId"] = SubnetId
     properties["IPOrdinal"] = IPOrdinal
@@ -83,4 +89,4 @@ def get_addresses_in_subnet(SubnetId: int = None) -> list[dict]:
     params = {"SubnetId": SubnetId}
     result: list = _build_query("IPAM.IPNode", fields, params)
     if result:
-        return [ip_address for ip_address in result]
+        return [ip_address for ip_address in result]  # noqa: C416
