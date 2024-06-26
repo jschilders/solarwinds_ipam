@@ -32,12 +32,14 @@ class SwisApi:
         return response.json()
 
     def _create(self, entity, **properties):
+        # print(entity, properties)
         return self._request("POST", f"Create/{entity}", properties)
 
     def _read(self, uri):
         return self._request("GET", uri)
 
     def _update(self, uri, **properties):
+        # print(uri, properties)
         self._request("POST", uri, properties)
 
     def _delete(self, uri):

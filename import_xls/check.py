@@ -2,6 +2,7 @@ from solarwinds_ipam import IPAM, IpNodeStatus, SubnetType
 from openpyxl import load_workbook
 import os
 import dotenv
+from pathlib import Path
 
 from openpyxl.worksheet.worksheet import Worksheet
 from typing import Iterator
@@ -80,7 +81,7 @@ def open_workbook(filename):
     return load_workbook(filename=filename, read_only=True, data_only=True)
 
 
-def process_summary(worksheet):
+def process_summary(worksheet):  # noqa: C901
     #
     # Extract the header with key/value pairs
     #
@@ -90,11 +91,24 @@ def process_summary(worksheet):
     pf_city = header["City"]
     pf_uid = header["Parking Facility ID"]
 
+    if not pf_shortname:
+        print("Site name not found in sheet - stop processing")
+        return
+
     print(f"Processing subnets for site {pf_shortname} ({pf_name}/{pf_city})")
 
     uri = ipam.ipgroups.get_uri(FriendlyName=pf_shortname)
     if not uri:
         print(f"Group {pf_shortname} not found")
+        pf_country = pf_shortname[:2]
+        parent_id = ipam.ipgroups.get_id(FriendlyName=pf_country)
+        if parent_id:
+            print(f"Create location {pf_shortname} in country {pf_country}")
+            new_comment = f"{pf_city} - {pf_name} ({pf_uid})"
+            ipam.ipgroups.create(ParentId=parent_id, FriendlyName=pf_shortname, Comments=new_comment)
+        else:
+            print(f"Site {pf_shortname} country code {pf_country} not found")
+            return
     else:
         new_comment = f"{pf_city} - {pf_name} ({pf_uid})"
         current_comment = ipam.ipgroups.get_comment(FriendlyName=pf_shortname)
@@ -108,42 +122,60 @@ def process_summary(worksheet):
     # Extract the "site subnet" (a single key/value pair)
     #
     site_supernet = extract_dict(worksheet, min_row=7, max_row=7)["Site Subnet - network address"]
+    if "/" not in site_supernet:
+        print(f"Supernet address {site_supernet} - No mask. Assuming /23")
+        site_supernet = f"{site_supernet}/23"
     site_supernet_address, site_supernet_cidr = site_supernet.split("/")
 
     uri = ipam.ipsubnet.get_uri(Address=site_supernet_address, CIDR=site_supernet_cidr, GroupType=SubnetType.Supernet)
     if not uri:
         print(f"Supernet {site_supernet_address}/{site_supernet_cidr} for {pf_shortname} not found")
-    else:
-        new_comment = f"Site Subnet {pf_shortname}"
-        current_comment = ipam.ipgroups.get_comment(FriendlyName=f"{site_supernet_address}/{site_supernet_cidr}")
+        uri = ipam.ipsubnet.get_uri(Address=site_supernet_address, CIDR=site_supernet_cidr)
+        if uri:
+            # Found, but not as a supernet
+            print(f"{site_supernet_address}/{site_supernet_cidr} is not a supernet, changing.")
+            ipam.ipsubnet.update(uri, GroupType=SubnetType.Supernet)
 
-        if new_comment != current_comment:
-            updates = {"Comments": new_comment}
-            print(f"{site_supernet_address}/{site_supernet_cidr} Updates: {updates}")
-            ipam.ipsubnet.update(uri, **updates)
+        parent_id = ipam.ipgroups.get_id(FriendlyName=pf_shortname)
+        if parent_id:
+            print(f"Create supernet {site_supernet}  in {pf_shortname} ")
+            new_comment = f"Site Subnet {pf_shortname}"
+            uri = ipam.ipsubnet.create(Address=site_supernet_address, CIDR=site_supernet_cidr, ParentId=parent_id, GroupType=SubnetType.Supernet, FriendlyName=f"{site_supernet_address}/{site_supernet_cidr}", Comments=new_comment)
 
-        networks = extract_table(worksheet, 11, max_col=8)
-        for subnet_name, subnet_address, _, _, subnet_cidr, _, subnet_vlan in networks:
-            subnet_cidr = subnet_cidr.lstrip("/")
-            subnet_vlan = str(subnet_vlan)
-            params: dict = {"Address": subnet_address, "CIDR": subnet_cidr}
-            result: list = ipam._build_query("IPAM.Subnet", ["Comments", "VLAN"], params)
-            if result:
-                comment, vlan = result[0].get("Comments"), result[0].get("VLAN")
-                updates = {}
-                if subnet_name != comment:
-                    updates["Comments"] = subnet_name
-                if subnet_vlan != vlan:
-                    updates["VLAN"] = subnet_vlan or ""
-                if updates:
-                    print(f"{subnet_address:<15} Updates: {updates}")
-                    uri = ipam.ipsubnet.get_uri(**params)
-                    ipam.ipsubnet.update(uri, **updates)
-            else:
-                print(subnet_name, subnet_address, subnet_cidr)
-                parent_id = ipam.ipsubnet.get_id(Address=site_supernet_address, CIDR=site_supernet_cidr)
-                print(parent_id)
-                ipam.ipsubnet.create(Address=subnet_address, CIDR=subnet_cidr, ParentId=parent_id, FriendlyName=f"{subnet_address}/{subnet_cidr}", Comments=subnet_name or "", VLAN=subnet_vlan or "")
+    new_comment = f"Site Subnet {pf_shortname}"
+    current_comment = ipam.ipgroups.get_comment(FriendlyName=f"{site_supernet_address}/{site_supernet_cidr}")
+
+    if new_comment != current_comment:
+        updates = {"Comments": new_comment}
+        print(f"{site_supernet_address}/{site_supernet_cidr} Updates: {updates}")
+        ipam.ipsubnet.update(uri, **updates)
+
+    networks = extract_table(worksheet, 11, max_col=8)
+    for subnet_name, subnet_address, _, _, subnet_cidr, _, subnet_vlan in networks:
+        if not all([subnet_name, subnet_address, subnet_cidr]):
+            print(f"incomplete parameters: {subnet_name=} {subnet_address=} {subnet_cidr}")
+            continue
+        subnet_cidr = subnet_cidr.lstrip("/")
+        subnet_vlan = str(subnet_vlan)
+        # print(f"{subnet_name}: {subnet_address}/{subnet_cidr} ({subnet_vlan}))")
+        params: dict = {"Address": subnet_address, "CIDR": subnet_cidr}
+        result: list = ipam._build_query("IPAM.Subnet", ["Comments", "VLAN"], params)
+        if result:
+            comment, vlan = result[0].get("Comments"), result[0].get("VLAN")
+            updates = {}
+            if subnet_name != comment:
+                updates["Comments"] = subnet_name
+            if subnet_vlan != vlan:
+                updates["VLAN"] = subnet_vlan or ""
+            if updates:
+                print(f"{subnet_address:<15} Updates: {updates}")
+                uri = ipam.ipsubnet.get_uri(**params)
+                ipam.ipsubnet.update(uri, **updates)
+        else:
+            # print(subnet_address, subnet_name, subnet_cidr, subnet_vlan)
+            print(f"{subnet_address:<15} Created: {subnet_name} {subnet_address}/{subnet_cidr} ({subnet_vlan}))")
+            parent_id = ipam.ipsubnet.get_id(Address=site_supernet_address, CIDR=site_supernet_cidr)
+            ipam.ipsubnet.create(Address=subnet_address, CIDR=subnet_cidr, ParentId=parent_id, FriendlyName=f"{subnet_address}/{subnet_cidr}", Comments=subnet_name or "", VLAN=subnet_vlan or "")
 
 
 def process_tab(worksheet):  # noqa: C901
@@ -189,7 +221,7 @@ def process_tab(worksheet):  # noqa: C901
                 updates["Status"] = int(IpNodeStatus.Reserved)
             if updates:
                 print(f"{subnet_gateway:<15} Updates: {updates}")
-                ipam.ipaddress.update(uri, **updates)
+                # ipam.ipaddress.update(uri, **updates)
         else:
             print(f"Default Gateway {subnet_gateway} not found")
 
@@ -228,7 +260,7 @@ def process_tab(worksheet):  # noqa: C901
                         updates["DnsBackward"] = name
                     if updates:
                         print(f"{ip_address:<15} Updates: {updates}")
-                        ipam.ipaddress.update(uri, **updates)
+                        # ipam.ipaddress.update(uri, **updates)
 
 
 def process_workbook(workbook):
@@ -248,11 +280,11 @@ def process_workbook(workbook):
             #
             process_summary(worksheet)
 
-        else:
-            #
-            # Process the 'regular' pages
-            #
-            process_tab(worksheet)
+        # else:
+        #     #
+        #     # Process the 'regular' pages
+        #     #
+        #     process_tab(worksheet)
 
 
 ##########################################################################################################
@@ -275,9 +307,11 @@ ipam = IPAM(server=SERVER, username=USERNAME, password=PASSWORD, verify=False)
 #
 # Open a workbook (Excel spreadsheet)
 #
-workbook = open_workbook(
-    # filename = 'UKSHRS - IP address schema.xlsx'
-    filename="BETOCE - subnets.xlsx"
-)
 
-process_workbook(workbook)
+
+INPUT_DIR = Path.cwd() / "files" / "IP Address Schema"
+for filename in sorted(INPUT_DIR.rglob("*.xls*")):
+    print()
+    print(filename)
+    workbook = open_workbook(filename=filename)
+    process_workbook(workbook)

@@ -15,11 +15,18 @@ def _build_query(): pass
 #
 # IP Group C/R/U/D
 #
-def create(FriendlyName: str = "", ParentId: int = 0, SubnetType: SubnetType = SubnetType.Group, **properties: dict) -> str:  # fmt: skip
-    properties["FriendlyName"] = FriendlyName
-    properties["ParentId"] = ParentId
-    properties["SubnetType"] = SubnetType
-    return _create("IPAM.Subnet", **properties)
+def create(FriendlyName: str = "", ParentId: int = 0, GroupType: SubnetType = SubnetType.Group, **properties: dict) -> str:  # fmt: skip
+    properties.setdefault("Address", "0.0.0.0")
+    properties.setdefault("CIDR", 32)
+    properties.setdefault("ParentId", ParentId)
+    properties.setdefault("FriendlyName", FriendlyName)
+    if GroupType != SubnetType.Subnet:
+        uri = _create("IPAM.Subnet", **properties)
+        # print(f"Change GroupType to {GroupType} ({int(GroupType)})")
+        _update(uri, GroupType=int(GroupType))
+        return uri
+    else:
+        return _create("IPAM.Subnet", **properties)
 
 
 def read(uri: str) -> dict:
