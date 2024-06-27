@@ -221,7 +221,7 @@ def process_tab(worksheet):  # noqa: C901
                 updates["Status"] = int(IpNodeStatus.Reserved)
             if updates:
                 print(f"{subnet_gateway:<15} Updates: {updates}")
-                # ipam.ipaddress.update(uri, **updates)
+                ipam.ipaddress.update(uri, **updates)
         else:
             print(f"Default Gateway {subnet_gateway} not found")
 
@@ -238,14 +238,24 @@ def process_tab(worksheet):  # noqa: C901
                 else:
                     ip_node = ipam.ipaddress.read(uri)
                     assert ip_address == ip_node["IPAddress"]
+
                     updates = {}
-                    if ip_node["Status"] != int(IpNodeStatus.Used):
+
+                    current_status = ip_node["Status"]
+
+                    if current_status != int(IpNodeStatus.Used):
                         if comment == "DHCP" or name == "DHCP":
-                            if ip_node["Status"] != int(IpNodeStatus.Transient):
-                                updates["Status"] = int(IpNodeStatus.Transient)
+                            if current_status != int(IpNodeStatus.Transient):
+                                print(f"{ip_address} change status from {current_status} to 'Transient'")
+                                updates["Status"] = "Transient"
                         else:
-                            if ip_node["Status"] != int(IpNodeStatus.Reserved):
-                                updates["Status"] = int(IpNodeStatus.Reserved)
+                            if current_status != int(IpNodeStatus.Reserved):
+                                print(f"{ip_address} change status from {current_status} to 'Reserved'")
+                                updates["Status"] = "Reserved"
+
+                    name = name or comment or ""
+                    if name != ip_node["DnsBackward"]:
+                        updates["DnsBackward"] = name
 
                     comment = comment or ""
                     if switch:
@@ -255,12 +265,9 @@ def process_tab(worksheet):  # noqa: C901
                     if comment != ip_node["Comments"]:
                         updates["Comments"] = comment
 
-                    name = name or ""
-                    if name != ip_node["DnsBackward"]:
-                        updates["DnsBackward"] = name
                     if updates:
                         print(f"{ip_address:<15} Updates: {updates}")
-                        # ipam.ipaddress.update(uri, **updates)
+                        ipam.ipaddress.update(uri, **updates)
 
 
 def process_workbook(workbook):
@@ -280,11 +287,17 @@ def process_workbook(workbook):
             #
             process_summary(worksheet)
 
-        # else:
+        # elif worksheet.title == "NetworkManagement":
         #     #
-        #     # Process the 'regular' pages
+        #     # The "Summary" sheet has a different layout
         #     #
-        #     process_tab(worksheet)
+        #     process_summary(worksheet)
+
+        else:
+            #
+            # Process the 'regular' pages
+            #
+            process_tab(worksheet)
 
 
 ##########################################################################################################
